@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calzados Ifratelli</title>
+<title>Calzados Ifratelli — Mayorista</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -377,6 +377,7 @@
   <header>
     <div class="brand">
       <span class="brand-a">Calzados</span><span class="brand-b">Ifratelli</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1px;color:var(--mustard);border:1px solid var(--mustard);border-radius:4px;padding:3px 8px;margin-left:4px;">MAYORISTA</span>
     </div>
     <nav class="main-nav">
       <a href="#top">Inicio</a>
@@ -487,8 +488,9 @@
         <h4>Quiénes somos</h4>
         <p>Con más de 35 años en el rubro de calzado e indumentaria, con el compromiso y la cercanía de ser atendidos por sus propios dueños. Brindando calidad y variedad en los productos y asesoramiento tanto para compras minoristas como mayoristas que buscan potenciar su negocio con un proveedor de confianza.</p>
         <div class="footer-social">
-          <a href="https://www.facebook.com/ifratelli" target="_blank" rel="noopener" title="Facebook">f</a>
+          <a href="https://www.facebook.com/profile.php?id=100054282020837&locale=es_LA" target="_blank" rel="noopener" title="Facebook">f</a>
           <a href="#" title="Instagram">ig</a>
+          <a href="https://tiktok.com/@calzadosifratelli8" target="_blank" rel="noopener" title="TikTok" style="font-size:13px;">tk</a>
         </div>
       </div>
       <div class="footer-contact" id="contacto">
@@ -500,7 +502,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Calzados Ifratelli</span>
+      <span>© 2026 Calzados Ifratelli — Mayorista</span>
       <a href="#" id="adminAccessLink">·</a>
     </div>
   </footer>
@@ -560,8 +562,11 @@
 const SUPABASE_URL = 'https://bfsshfsjmpojitbgueyj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmc3NoZnNqbXBvaml0Ymd1ZXlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcwOTY5NDYsImV4cCI6MjEwMjY3Mjk0Nn0.kSJcR6OyVGyss7HS_IBkMTsapga9U09Gvqemzf5T408';
 
-// Cambiá esta dirección por la real de tu local — el texto y el mapa se actualizan solos.
-const STORE_ADDRESS = 'Av. Gral. San Martín 2836, B1752AAT Gran Buenos Aires, Provincia de Buenos Aires';
+// Cambiá esta dirección por la real de tu local — el texto se actualiza solo.
+const STORE_ADDRESS = 'Av. Gral. San Martín 2836, Lomas del Mirador, Buenos Aires, Argentina';
+// Coordenadas exactas del local, para que el mapa no falle. Si mudás el local, buscá las nuevas en Google Maps (clic derecho sobre el punto → "¿Qué hay aquí?").
+const STORE_LAT = -34.6642336;
+const STORE_LNG = -58.5388703;
 
 // Configuración de EmailJS (emailjs.com) para el aviso de pedidos
 const EMAILJS_PUBLIC_KEY = 'TU_EMAILJS_PUBLIC_KEY';
@@ -591,7 +596,7 @@ function fromRow(row){
 }
 
 async function loadProducts(){
-  const { data, error } = await sb.from('productos').select('*').order('id');
+  const { data, error } = await sb.from('productos_mayorista').select('*').order('id');
   if(error){
     console.error(error);
     grid.innerHTML = '<p class="admin-empty">No se pudieron cargar los productos. Revisá la configuración de Supabase.</p>';
@@ -602,7 +607,7 @@ async function loadProducts(){
 }
 
 async function loadCategories(){
-  const { data, error } = await sb.from('categorias').select('*').order('nombre');
+  const { data, error } = await sb.from('categorias_mayorista').select('*').order('nombre');
   if(error){
     console.error(error);
     return;
@@ -998,7 +1003,7 @@ addCatBtn.addEventListener('click', async () => {
     err_newCat.textContent = 'Esa categoría ya existe.';
     return;
   }
-  const { error } = await sb.from('categorias').insert({ nombre });
+  const { error } = await sb.from('categorias_mayorista').insert({ nombre });
   if(error){
     err_newCat.textContent = 'No se pudo agregar. Verificá que estés logueado.';
     return;
@@ -1015,7 +1020,7 @@ async function deleteCategory(id, nombre){
     ? `Hay productos con la categoría "${nombre}". Si la borrás, esos productos quedan con esa categoría igual pero ya no vas a poder elegirla para nuevos productos. ¿Continuar?`
     : `¿Eliminar la categoría "${nombre}"?`;
   if(!confirm(msg)) return;
-  const { error } = await sb.from('categorias').delete().eq('id', id);
+  const { error } = await sb.from('categorias_mayorista').delete().eq('id', id);
   if(error){
     alert('No se pudo eliminar. Verificá que estés logueado.');
     return;
@@ -1143,7 +1148,7 @@ async function deleteProduct(id){
   if(!p) return;
   if(!confirm(`¿Eliminar "${p.name}" del catálogo?`)) return;
 
-  const { error } = await sb.from('productos').delete().eq('id', id);
+  const { error } = await sb.from('productos_mayorista').delete().eq('id', id);
   if(error){
     alert('No se pudo eliminar. Verificá que estés logueado.');
     return;
@@ -1206,9 +1211,9 @@ productForm.addEventListener('submit', async (e) => {
 
     let error;
     if(editingId){
-      ({ error } = await sb.from('productos').update(row).eq('id', editingId));
+      ({ error } = await sb.from('productos_mayorista').update(row).eq('id', editingId));
     } else {
-      ({ error } = await sb.from('productos').insert(row));
+      ({ error } = await sb.from('productos_mayorista').insert(row));
     }
 
     if(error) throw error;
@@ -1228,7 +1233,7 @@ productForm.addEventListener('submit', async (e) => {
 
 function initStoreInfo(){
   document.getElementById('storeAddressText').textContent = '📍 ' + STORE_ADDRESS;
-  document.getElementById('storeMap').src = 'https://maps.google.com/maps?q=' + encodeURIComponent(STORE_ADDRESS) + '&output=embed';
+  document.getElementById('storeMap').src = 'https://maps.google.com/maps?q=' + STORE_LAT + ',' + STORE_LNG + '&z=16&output=embed';
 }
 
 resetForm();
